@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>JSONEditor | Load and save</title>
+
+  {% load static %}
+  <link href="{% static "css/jsoneditor.min.css" %}" rel="stylesheet" type="text/css">
+  <script src="{% static "js/jsoneditor.min.js" %}"></script>
+  
+  <style>
+    #json-input {
+      width: 900px;
+      height: 800px;
+    }
+    </style>
+</head>
+<body>
+{{ json_data.to_json|json_script:'json-data' }}
+
+<h3>Doniak Dataset Editor</h3>
+
+{% if json_data|length == 1  %}
+    <h4>Oeuvre {{json_data.}}</h4>
+{% endif %}
+
+<div id="json-input"></div>
+<button type="button" onclick="submitForm()">Submit</button>
+
+<script>
+    // Initialize JSON Editor
+    var container = document.getElementById("json-input");
+    const options = {
+        mode: 'code',
+        height: 800,
+        modes: ['code', 'form', 'text', 'tree', 'view', 'preview'], // allowed modes
+        onModeChange: function (newMode, oldMode) {
+        console.log('Mode switched from', oldMode, 'to', newMode)
+        }
+    }
+
+    const JSON_DATA = JSON.parse(document.getElementById('json-data').textContent);
+    var editor = new JSONEditor(container, options, JSON_DATA);
+
+    function submitForm() {
+        // Get JSON data from the editor
+        var jsonData = editor.get();
+
+        // Perform Fetch API POST request
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token in headers
+            },
+            body: JSON.stringify(jsonData),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('POST request successful', data);
+            
+            // Refresh the page
+            window.location.reload();
+        })
+        .catch(error => {
+            alert('Error:', error.message);
+            console.error('Error:', error.message);
+        });
+    }
+</script>
+</body>
+</html>
+
+  

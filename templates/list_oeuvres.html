@@ -1,0 +1,59 @@
+
+
+<h1>Doniak Dataset</h1>
+<h3>Oeuvres List</h3>
+<form method="get">
+{{ form.as_table }}
+<br>
+<button type="submit">Filter</button>
+<a href="?">
+    <button type="button">Clear Filters</button>
+</a>
+</form>
+<br>
+{% if page %}
+<div>
+    <table>
+        <tr>
+            {% for field in page.object_list.0.to_json.keys %}
+            {% if field in page.object_list.0.regular_fields %}
+            <th>{{ field }}</th>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% for oeuvre in page.object_list %}
+        <tr>
+            {% for field, val in oeuvre.to_json.items %}
+            {% if field in oeuvre.regular_fields %}
+                <td>{{val}}</td>
+                {% endif %}
+            
+            {% endfor %}
+            <td><a href="/edit_one?oeuvre_num_livres={{oeuvre.oeuvre_num_livres}}">EDIT</a></td>
+            <td><a href="/delete?oeuvre={{oeuvre.id}}">DELETE</a></td>
+        </tr>
+        {% endfor %}
+            
+    </table>
+</div>
+<div class="paginator">
+    <a href="{{ request.get_full_path }}&p=1">&lt;&lt;</a>
+    {% if page.has_previous %}
+    <a href="{{ request.get_full_path }}&p={{ page.previous_page_number }}">&lt;</a>
+    {% else %}
+    &lt;
+    {% endif %}
+    <a href="{{ request.get_full_path }}&p={{ page.number }}">{{ page.number }}</a>
+    
+    {% if page.has_next %}
+    <a href="{{ request.get_full_path }}&p={{ page.next_page_number }}">&gt;</a>
+    {% else %}
+    &gt;
+    {% endif %}
+    
+    <a href="{{ request.get_full_path }}&p={{ page.paginator.num_pages }}">&gt;&gt;</a>
+    {% else %}
+    No Oeuvres found for the applied filter
+    {% endif %}
+</div>
+
