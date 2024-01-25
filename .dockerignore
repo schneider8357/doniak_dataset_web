@@ -1,0 +1,8 @@
+venv
+.venv
+Dockerfile
+*.sqlite3
+*.tar.gz
+*.env
+.git
+.gitignore

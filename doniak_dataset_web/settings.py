@@ -20,12 +20,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%lx!5owk7eh6*=$&j$3m#ilq*u+=)1dlphh!i4nm3487vwz$y0"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+
+MAIN_DOMAIN = "scd.prefi.tech"
+ALLOWED_HOSTS = [f"{MAIN_DOMAIN}", f"www.{MAIN_DOMAIN}", "localhost"]
+CSRF_TRUSTED_ORIGINS = [ 
+    f"http://{MAIN_DOMAIN}",
+    f"http://www.{MAIN_DOMAIN}",
+    f"https://{MAIN_DOMAIN}",
+    f"https://www.{MAIN_DOMAIN}",
+]
+
+CSRF_COOKIE_SECURE = True
+CORS_ALLOW_ALL_ORIGINS = False
+SESSION_COOKIE_SECURE = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+SECURE_HSTS_SECONDS = 2_592_000
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -77,8 +96,12 @@ WSGI_APPLICATION = "doniak_dataset_web.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": "5432",
     }
 }
 
@@ -118,6 +141,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]

@@ -7,30 +7,28 @@
 
   {% load static %}
   <link href="{% static "css/jsoneditor.min.css" %}" rel="stylesheet" type="text/css">
-  <script src="{% static "js/jsoneditor.min.js" %}"></script>
+  <script src="{% static "js/jsoneditor.min.js" %}" type="text/javascript"></script>
   
   <style>
-    #json-input {
+    #editor {
       width: 900px;
       height: 800px;
     }
     </style>
 </head>
 <body>
-{{ json_data.to_json|json_script:'json-data' }}
+{{ json_data|json_script:'json-data' }}
 
 <h3>Doniak Dataset Editor</h3>
 
-{% if json_data|length == 1  %}
-    <h4>Oeuvre {{json_data.}}</h4>
-{% endif %}
+<h4>Oeuvre {{json_data.oeuvre_num_livres}}</h4>
 
-<div id="json-input"></div>
+<div id="editor"></div>
 <button type="button" onclick="submitForm()">Submit</button>
 
 <script>
     // Initialize JSON Editor
-    var container = document.getElementById("json-input");
+    var container = document.getElementById("editor");
     const options = {
         mode: 'code',
         height: 800,

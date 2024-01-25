@@ -44,16 +44,19 @@ class OeuvreFilterForm(forms.ModelForm):
 
     class Meta:
         model = Oeuvre
-        fields = [
-            "oeuvre_num_livres",
-            "oeuvre_type",
+        fields_contains = [
             "oeuvre_titre",
             "oeuvre_titre_doniak",
             "collection_serie",
             "chaine",
             "genre_oeuvre",
+        ]
+        fields_equal = [
+            "oeuvre_num_livres",
+            "oeuvre_type",
             "date_diff",
         ]
+        fields = fields_equal + fields_contains
 
         widgets = {
             "date_diff": DateInput(),

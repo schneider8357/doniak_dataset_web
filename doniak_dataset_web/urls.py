@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from dataset_editor.views import editor, list_oeuvres, edit_one, index
 
@@ -25,4 +27,4 @@ urlpatterns = [
     # path("editor/", editor, name='editor'),
     path("list/", list_oeuvres, name='list_oeuvres'),
     path("edit_one/", edit_one, name='edit_one'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -21,18 +21,21 @@ def list_oeuvres(request):
     oeuvres = Oeuvre.objects.all()
     p = request.GET.get("p", 1)
     items_per_page = 25
-    if form.is_valid():
-        for field in OeuvreFilterForm.Meta.fields:
-            value = form.cleaned_data.get(field)
-            if value:
-                oeuvres = oeuvres.filter(**{field: value})
-        order_by = form.cleaned_data.get("order_by")
-        if order_by:
-            if form.cleaned_data.get("desc"):
-                order_by = "-" + order_by
-            oeuvres = oeuvres.order_by(order_by)
-        if form.cleaned_data.get("items_per_page"):
-            items_per_page = form.cleaned_data.get("items_per_page")
+    for field in OeuvreFilterForm.Meta.fields_equal:
+        value = form.data.get(field)
+        if value:
+            oeuvres = oeuvres.filter(**{field: value})
+    for field in OeuvreFilterForm.Meta.fields_contains:
+        value = form.data.get(field)
+        if value:
+            oeuvres = oeuvres.filter(**{f"{field}__contains": value})
+    order_by = form.data.get("order_by")
+    if order_by:
+        if form.data.get("desc"):
+            order_by = "-" + order_by
+        oeuvres = oeuvres.order_by(order_by)
+    if form.data.get("items_per_page"):
+        items_per_page = form.data.get("items_per_page")
     paginator = Paginator(oeuvres, items_per_page)
     page = paginator.page(p)
     return render(
@@ -119,7 +122,8 @@ def editor(request):
 
 def edit_one(request):
     if request.method == "GET":
-        return render(request, "editor.html", {"json_data": get_object_or_404(Oeuvre, oeuvre_num_livres=request.GET.get("oeuvre_num_livres")).to_json()})
+        oeuvre = get_object_or_404(Oeuvre, oeuvre_num_livres=request.GET.get("oeuvre_num_livres")).to_json()
+        return render(request, "editor.html", {"json_data": oeuvre})
     elif request.method == 'POST':
         try:
             dict_oeuvre = json.loads(request.body)
@@ -133,9 +137,14 @@ def edit_one(request):
             match = re.search(r'\b(\d{2}).(\d{2}).(\d{4})\b', dict_regular_fields["date_diff"])
             result = match.groups() if match else None
             dict_regular_fields["date_diff"] = datetime(*([int(x) for x in result][::-1]))
-            obj_oeuvre = get_object_or_404(Oeuvre, oeuvre_num_livres=dict_oeuvre["oeuvre_num_livres"])
-            for field, value in dict_regular_fields.items():
-                setattr(obj_oeuvre, field, value)
+            try:
+                obj_oeuvre = get_object_or_404(Oeuvre, oeuvre_num_livres=dict_oeuvre["oeuvre_num_livres"])
+                for field, value in dict_regular_fields.items():
+                    setattr(obj_oeuvre, field, value)
+            except Http404:
+                if not 0 < int(dict_oeuvre["oeuvre_num_livres"]) < 9000:
+                    return JsonResponse({'status': 'error', 'message': 'Invalid oeuvre_num_livres'})
+                obj_oeuvre = Oeuvre.objects.create(**dict_regular_fields)
             for field in dict_many_to_many_fields:
                 personnes = []
                 for personne in dict_many_to_many_fields[field]:
@@ -166,9 +175,9 @@ def edit_one(request):
                         except IndexError as e:
                             return HttpResponse(f"{e} - {ep_regular_fields['episode_num']}", status=400)
                         obj_episode = Episode.objects.create(oeuvre=obj_oeuvre, **ep_regular_fields)
-                    for field in dict_many_to_many_fields:
+                    for field in ep_many_to_many_fields:
                         personnes = []
-                        for personne in dict_many_to_many_fields[field]:
+                        for personne in ep_many_to_many_fields[field]:
                             obj_personne, created = Personne.objects.get_or_create(full_name=personne)
                             if not obj_personne.role:
                                 obj_personne.role = []
