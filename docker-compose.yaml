@@ -22,7 +22,7 @@ services:
       - .dbcredentials.env
     volumes:
       - django_media:/usr/app/media
-      - django_static:/usr/app/static
+      - django_static:/usr/app/staticfiles
     restart: always
     ports:
      - "127.0.0.1:8000:8000"

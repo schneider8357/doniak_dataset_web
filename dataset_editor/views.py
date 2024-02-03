@@ -18,7 +18,7 @@ def list_oeuvres(request):
     if request.method != "GET":
         return HttpResponseNotAllowed()
     form = OeuvreFilterForm(request.GET)
-    oeuvres = Oeuvre.objects.all()
+    oeuvres = Oeuvre.objects.all().order_by('oeuvre_num_livres')
     p = request.GET.get("p", 1)
     items_per_page = 25
     for field in OeuvreFilterForm.Meta.fields_equal:
@@ -184,7 +184,7 @@ def edit_one(request):
                             obj_personne.role = set([field] + obj_personne.role)
                             obj_personne.save()
                             personnes.append(obj_personne)
-                        getattr(obj_oeuvre, field).set(personnes)
+                        getattr(obj_episode, field).set(personnes)
                     obj_episode.save()
             obj_oeuvre.save()
             return JsonResponse({'status': 'ok'})

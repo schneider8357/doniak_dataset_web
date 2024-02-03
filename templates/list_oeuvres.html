@@ -1,5 +1,29 @@
-
-
+{% load static %}
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            background-color: #f2f2f2; /* Cor de fundo desejada */
+        }
+    
+        th, td {
+            border: 1px solid #dddddd; /* Cor da borda das células */
+            padding: 8px; /* Espaçamento interno das células */
+            text-align: left;
+        }
+    
+        th {
+            background-color: #4CAF50; /* Cor de fundo do cabeçalho */
+            color: white; /* Cor do texto do cabeçalho */
+        }
+    
+        tr:hover {
+            background-color: #f5f5f5; /* Cor de fundo ao passar o mouse sobre a linha */
+        }
+    </style>
+</head>
 <h1>Dataset</h1>
 <h3>Oeuvres List</h3>
 <form method="get">
@@ -15,6 +39,7 @@
 <div>
     <table>
         <tr>
+            <th>edit</th>
             {% for field in page.object_list.0.to_json.keys %}
             {% if field in page.object_list.0.regular_fields %}
             <th>{{ field }}</th>
@@ -23,13 +48,13 @@
         </tr>
         {% for oeuvre in page.object_list %}
         <tr>
+            <td><a href="/edit_one?oeuvre_num_livres={{oeuvre.oeuvre_num_livres}}"><img src="/static/img/magnifying-glass.svg" alt="Edit" width="20" height="20"></a></td>
             {% for field, val in oeuvre.to_json.items %}
             {% if field in oeuvre.regular_fields %}
                 <td>{{val}}</td>
                 {% endif %}
             
             {% endfor %}
-            <td><a href="/edit_one?oeuvre_num_livres={{oeuvre.oeuvre_num_livres}}">EDIT</a></td>
         </tr>
         {% endfor %}
             

@@ -5,7 +5,7 @@ from multiselectfield import MultiSelectField
 
 
 class Personne(models.Model):
-    full_name = models.CharField(max_length=1024, null=False, blank=False)
+    full_name = models.CharField(max_length=2048, null=False, blank=False)
     naissance = models.DateField(null=True)
 
     genre = models.CharField(max_length=1, null=True)
@@ -125,7 +125,7 @@ class Oeuvre(models.Model):
     ]
 
     oeuvre_type = models.CharField(
-        max_length=1024,
+        max_length=32,
         choices=OEUVRE_TYPE_CHOICES,
         default=OEUVRE_TYPE_UNITAIRE,
         null=False,
@@ -133,18 +133,18 @@ class Oeuvre(models.Model):
     )
 
     feuilleton = models.BooleanField()
-    oeuvre_titre = models.CharField(max_length=1024, null=False, blank=False)
-    oeuvre_titre_doniak = models.CharField(max_length=1024, null=False, blank=False)
-    collection_serie = models.CharField(max_length=1024, null=False, blank=False)
+    oeuvre_titre = models.CharField(max_length=2048, null=False, blank=False)
+    oeuvre_titre_doniak = models.CharField(max_length=2048, null=False, blank=False)
+    collection_serie = models.CharField(max_length=2048, null=False, blank=False)
     date_diff = models.DateField(null=False)
-    chaine = models.CharField(max_length=1024, blank=False, null=False)
-    note = models.CharField(max_length=1024, blank=True, default='')
-    episodes_nbr = models.CharField(max_length=1024, blank=True, default='')
-    duree = models.CharField(max_length=1024, blank=True, default='')
-    genre_oeuvre = models.CharField(max_length=1024, blank=True, default='')
-    num_saisons = models.CharField(max_length=1024, blank=True, default='')
-    sujet = models.CharField(max_length=1024, blank=True, default='')
-    source_type = models.CharField(max_length=1024, blank=True, default='')
+    chaine = models.CharField(max_length=2048, blank=False, null=False)
+    note = models.CharField(max_length=4096, blank=True, default='')
+    episodes_nbr = models.CharField(max_length=2048, blank=True, default='')
+    duree = models.CharField(max_length=2048, blank=True, default='')
+    genre_oeuvre = models.CharField(max_length=2048, blank=True, default='')
+    num_saisons = models.CharField(max_length=2048, blank=True, default='')
+    sujet = models.CharField(max_length=4096, blank=True, default='')
+    source_type = models.CharField(max_length=2048, blank=True, default='')
     comediens = models.ManyToManyField(Personne, related_name='role_comediens')
     adaptation = models.ManyToManyField(Personne, related_name='role_adaptation')
     photo = models.ManyToManyField(Personne, related_name='role_photo')
@@ -284,10 +284,10 @@ class Episode(models.Model):
     oeuvre = models.ForeignKey(Oeuvre, null=False, on_delete=models.CASCADE)
     episode_num = models.CharField(max_length=12, blank=False, null=False, unique=True)
     episode_num_part = models.CharField(max_length=12, blank=False, null=False)
-    note = models.CharField(max_length=1024, blank=True, default='')
-    genre = models.CharField(max_length=1024, blank=True, default='')
-    sujet = models.CharField(max_length=1024, blank=True, default='')
-    source_type = models.CharField(max_length=1024, blank=True, default='')
+    note = models.CharField(max_length=4096, blank=True, default='')
+    genre = models.CharField(max_length=2048, blank=True, default='')
+    sujet = models.CharField(max_length=4096, blank=True, default='')
+    source_type = models.CharField(max_length=2048, blank=True, default='')
     comediens = models.ManyToManyField(Personne, related_name='ep_role_comediens')
     adaptation = models.ManyToManyField(Personne, related_name='ep_role_adaptation')
     photo = models.ManyToManyField(Personne, related_name='ep_role_photo')

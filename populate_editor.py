@@ -20,7 +20,7 @@ def main():
         with open(file_path, 'r') as file:
             json_data = json.load(file)
             if isinstance(json_data, list):
-                skip = 0 + 5940
+                skip = 0
                 for index, element in enumerate(json_data[skip::]):
                     # print(f"{index+skip=}")
                     post_data(element)
