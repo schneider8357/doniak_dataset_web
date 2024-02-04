@@ -4,7 +4,7 @@ import traceback
 from datetime import datetime
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse, Http404, HttpResponseNotAllowed, HttpResponse
+from django.http import JsonResponse, Http404, HttpResponseNotAllowed, HttpResponse, StreamingHttpResponse
 from django.core.paginator import Paginator
 
 from .models import Personne, Oeuvre, Episode
@@ -43,6 +43,23 @@ def list_oeuvres(request):
         "list_oeuvres.html",
         {"form": form, "page": page, "oeuvre_fields": Oeuvre._meta.get_fields()},
     )
+
+def get_json_generator():
+    yield "["
+    data = Oeuvre.objects.all().order_by('oeuvre_num_livres')
+    last = data[len(data) - 1]
+    for record in data[:len(data) - 1]:
+        yield (json.dumps(record.to_json()) + ",").encode('utf-8')
+    yield json.dumps(last.to_json()).encode('utf-8')
+    yield "]"
+
+def export_json(request):
+    if request.method != "GET":
+        return HttpResponseNotAllowed()
+    response = StreamingHttpResponse(streaming_content=get_json_generator(), content_type='application/json')
+    response['Content-Disposition'] = 'attachment; filename="{0}_{1}.json"'.format(
+        'oeuvres', datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
+    return response
 
 def editor(request):
     if request.method == "GET":

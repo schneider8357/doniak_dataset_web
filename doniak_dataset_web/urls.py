@@ -19,12 +19,14 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from dataset_editor.views import editor, list_oeuvres, edit_one, index
+from dataset_editor.views import editor, list_oeuvres, edit_one, index, export_json
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index, name='index'),
     # path("editor/", editor, name='editor'),
-    path("list/", list_oeuvres, name='list_oeuvres'),
+    path("oeuvres/", list_oeuvres, name='list_oeuvres'),
     path("edit_one/", edit_one, name='edit_one'),
+    path("export/", export_json, name='export_json'),
+    
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
