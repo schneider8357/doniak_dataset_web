@@ -6,6 +6,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, Http404, HttpResponseNotAllowed, HttpResponse, StreamingHttpResponse
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 from .models import Personne, Oeuvre, Episode
 from .forms import OeuvreFilterForm
@@ -28,7 +29,13 @@ def list_oeuvres(request):
     for field in OeuvreFilterForm.Meta.fields_contains:
         value = form.data.get(field)
         if value:
-            oeuvres = oeuvres.filter(**{f"{field}__contains": value})
+            oeuvres = oeuvres.filter(**{f"{field}__icontains": value})
+    personne = form.data.get("personne")
+    if personne:
+        query = Q()
+        for field in Oeuvre.many_to_many_fields:
+            query.add(Q(**{f"{field}__full_name__icontains": personne}), Q.OR)
+        oeuvres = oeuvres.filter(query).distinct("oeuvre_num_livres")
     order_by = form.data.get("order_by")
     if order_by:
         if form.data.get("desc"):

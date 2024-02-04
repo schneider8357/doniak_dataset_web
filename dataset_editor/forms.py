@@ -20,6 +20,8 @@ class OeuvreFilterForm(forms.ModelForm):
         ("genre_oeuvre", "Genre"),
     ]
 
+    personne = forms.CharField()
+
     order_by = forms.ChoiceField(
         label="Order By",
         choices=ORDER_BY_CHOICES,
